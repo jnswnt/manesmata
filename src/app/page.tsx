@@ -92,15 +92,24 @@ export default async function Home() {
                   </h3>
                   <p className="font-medium text-base mb-6 flex-grow line-clamp-3 opacity-80">{project.description}</p>
 
-                  {project.features && (
-                    <div className="mb-0 flex flex-wrap gap-2">
-                      {JSON.parse(project.features).slice(0, 3).map((feature: string, i: number) => (
-                        <span key={i} className="text-[10px] font-bold border-2 border-black px-2 py-0.5 bg-yellow-100 uppercase">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                  {project.features && (() => {
+                    let parsedFeatures: string[] = [];
+                    try {
+                      parsedFeatures = JSON.parse(project.features);
+                      if (!Array.isArray(parsedFeatures)) parsedFeatures = [];
+                    } catch (e) {
+                      parsedFeatures = project.features.split(/[\n,]+/).map((f: string) => f.trim()).filter((f: string) => f !== "");
+                    }
+                    return parsedFeatures.length > 0 ? (
+                      <div className="mb-0 flex flex-wrap gap-2">
+                        {parsedFeatures.slice(0, 3).map((feature: string, i: number) => (
+                          <span key={i} className="text-[10px] font-bold border-2 border-black px-2 py-0.5 bg-yellow-100 uppercase">
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
 
                 {/* Footer Action Hint */}

@@ -17,7 +17,16 @@ export default async function ProjectDetailPage({
     }
 
     const settings = await getSettings() as any;
-    const features = project.features ? JSON.parse(project.features) : [];
+
+    let features: string[] = [];
+    if (project.features) {
+        try {
+            features = JSON.parse(project.features);
+            if (!Array.isArray(features)) features = [];
+        } catch (e) {
+            features = project.features.split(/[\n,]+/).map((f: string) => f.trim()).filter((f: string) => f !== "");
+        }
+    }
 
     // Parse images array
     let projectImages: string[] = [];
