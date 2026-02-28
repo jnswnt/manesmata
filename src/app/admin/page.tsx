@@ -1,6 +1,7 @@
-import { getProjects, deleteProject } from "../actions";
+import { getProjects, deleteProject, logoutAdmin } from "../actions";
 import Link from "next/link";
 import ProjectForm from "./ProjectForm";
+import { redirect } from "next/navigation";
 
 export default async function AdminPage() {
     const projects = await getProjects();
@@ -11,9 +12,20 @@ export default async function AdminPage() {
                 <div className="text-2xl font-black tracking-tighter uppercase">
                     Admin <span className="text-[var(--color-primary)]">Dashboard</span>
                 </div>
-                <Link href="/" className="font-bold text-sm tracking-wide hover:underline decoration-2 underline-offset-4">
-                    Kembali ke Web
-                </Link>
+                <div className="flex gap-4 items-center">
+                    <Link href="/" className="font-bold text-sm tracking-wide hover:underline decoration-2 underline-offset-4">
+                        Lihat Web
+                    </Link>
+                    <form action={async () => {
+                        "use server";
+                        await logoutAdmin();
+                        redirect("/admin/login");
+                    }}>
+                        <button type="submit" className="font-bold text-sm tracking-wide border-2 border-black bg-black text-white px-4 py-2 hover:bg-[var(--color-primary)] transition-colors">
+                            Logout
+                        </button>
+                    </form>
+                </div>
             </nav>
 
             <main className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-start">

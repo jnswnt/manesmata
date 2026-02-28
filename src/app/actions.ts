@@ -2,6 +2,31 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
+export async function loginAdmin(password: string) {
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword || password !== adminPassword) {
+        return { error: "Password salah atau belum disetur!" };
+    }
+
+    // Set cookie yang aman untuk sesi login (berlaku 1 hari)
+    const cookieStore = await cookies();
+    cookieStore.set("admin-session", "authenticated", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24,
+        path: "/",
+    });
+
+    return { success: true };
+}
+
+export async function logoutAdmin() {
+    const cookieStore = await cookies();
+    cookieStore.delete("admin-session");
+    return { success: true };
+}
 
 export async function getProjects() {
     try {
