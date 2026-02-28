@@ -71,10 +71,11 @@ export default async function AdminPage() {
                                                 </a>
                                             )}
 
-                                            <form action={async () => {
+                                            <form action={async (formData: FormData) => {
                                                 "use server";
-                                                await deleteProject(project.id);
+                                                await deleteProject(Number(formData.get("id")));
                                             }}>
+                                                <input type="hidden" name="id" value={project.id} />
                                                 <button type="submit" className="text-sm font-bold border-2 border-[var(--color-primary)] text-[var(--color-primary)] px-4 py-2 hover:bg-[var(--color-primary)] hover:text-white transition-colors">
                                                     🗑️ Hapus
                                                 </button>
