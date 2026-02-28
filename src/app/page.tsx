@@ -93,6 +93,65 @@ export default async function Home() {
           </div>
         )}
       </section>
+
+      {/* About Section */}
+      <section className="px-6 py-20 bg-[var(--color-bg)] mt-20 border-t-4 border-black">
+        <div className="max-w-4xl mx-auto neo-box p-8 md:p-12 bg-[#FF90E8]">
+          <h2 className="text-4xl font-black uppercase mb-6 text-black border-b-4 border-black pb-2 inline-block">
+            Mengenal Lebih Dekat
+          </h2>
+          <p className="text-xl font-medium leading-relaxed mb-6 bg-white p-6 neo-box shadow-[4px_4px_0px_#000]">
+            ManesMata hadir sebagai wadah inovasi digital yang mengedepankan solusi praktis dan efisien untuk berbagai lini bisnis. Kami berfokus pada pengembangan perangkat lunak yang tidak hanya fungsional, tetapi juga memberikan pengalaman pengguna yang intuitif.
+          </p>
+          <div className="flex flex-wrap gap-4 mt-8">
+            <span className="neo-box px-4 py-2 bg-white font-bold text-sm rotate-1">Desain Neobrutalism</span>
+            <span className="neo-box px-4 py-2 bg-white font-bold text-sm -rotate-2">Performa Tinggi</span>
+            <span className="neo-box px-4 py-2 bg-white font-bold text-sm rotate-2">Mudah Digunakan</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="px-6 py-20 max-w-7xl mx-auto">
+        <h2 className="text-4xl font-black uppercase mb-12 border-b-4 border-black pb-4 inline-block">
+          Hubungi Kami
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {/* Contact Info */}
+          <div className="flex flex-col gap-6">
+            <p className="text-xl font-medium mb-4">
+              Punya pertanyaan, ide kolaborasi, atau butuh bantuan teknis? Jangan ragu untuk menghubungi kami melalui platform berikut:
+            </p>
+            <a href="mailto:hello@manesmata.web.id" className="neo-box p-6 bg-[var(--color-secondary)] hover:bg-[#FFC900] transition-colors flex flex-col items-start gap-2 block">
+              <span className="font-bold text-sm uppercase tracking-wider">Email</span>
+              <span className="text-2xl font-black break-all">hello@manesmata.web.id</span>
+            </a>
+            <a href="https://wa.me/message/" target="_blank" rel="noopener noreferrer" className="neo-box p-6 bg-[var(--color-primary)] hover:bg-[#00E5FF] transition-colors flex flex-col items-start gap-2 block text-white">
+              <span className="font-bold text-sm uppercase tracking-wider">WhatsApp</span>
+              <span className="text-2xl font-black">+62 Hubungi via WA</span>
+            </a>
+          </div>
+
+          {/* Action box */}
+          <div className="neo-box p-8 bg-white flex flex-col justify-center items-center text-center">
+            <div className="text-6xl mb-4">💬</div>
+            <h3 className="text-3xl font-black uppercase mb-4">Mari Berdiskusi!</h3>
+            <p className="font-medium text-lg mb-8">Kirimkan pesan Anda 24/7. Kami akan merespons secepat mungkin untuk solusi bisnis Anda.</p>
+            <Link href="mailto:hello@manesmata.web.id" className="neo-button text-lg w-full py-4">
+              Kirim Pesan Sekarang
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Simple Footer */}
+      <footer className="border-t-4 border-black bg-white p-6 mt-12">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="font-black text-xl uppercase tracking-tighter">ManesMata<span className="text-[var(--color-primary)]">.</span></div>
+          <p className="font-medium text-sm">© 2026 ManesMata. Hak Cipta Dilindungi.</p>
+        </div>
+      </footer>
     </main>
   );
 }
