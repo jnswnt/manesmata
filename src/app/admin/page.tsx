@@ -49,7 +49,7 @@ export default async function AdminPage() {
                                 Belum ada project yang ditambahkan.
                             </div>
                         ) : (
-                            projects.map((project) => (
+                            projects.map((project: any) => (
                                 <div key={project.id} className="neo-box bg-white flex flex-col sm:flex-row shadow-[4px_4px_0px_#1e1e1e] hover:shadow-[6px_6px_0px_#1e1e1e] transition-shadow overflow-hidden">
                                     {/* Left color bar */}
                                     <div className="w-full sm:w-8 h-8 sm:h-auto border-b-4 sm:border-b-0 sm:border-r-4 border-black" style={{ backgroundColor: project.color || 'var(--color-secondary)' }}></div>
