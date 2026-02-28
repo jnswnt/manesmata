@@ -78,7 +78,7 @@ export default async function Home() {
                     </div>
                   )}
 
-                  {project.demoUrl ? (
+                  {(project.demoUrl && project.demoUrl !== '#') ? (
                     <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="neo-button w-full">
                       Kunjungi Web
                     </a>
