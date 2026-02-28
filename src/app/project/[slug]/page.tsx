@@ -1,21 +1,37 @@
-import { getProjectById } from "@/app/actions";
+import { getProjectBySlug, getSettings } from "@/app/actions";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+
+import ProjectImageSlider from "./ProjectImageSlider";
 
 export default async function ProjectDetailPage({
     params,
 }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ slug: string }>;
 }) {
-    const { id } = await params;
-    const project = await getProjectById(parseInt(id));
+    const { slug } = await params;
+    const project = await getProjectBySlug(slug) as any;
 
     if (!project) {
         notFound();
     }
 
+    const settings = await getSettings() as any;
     const features = project.features ? JSON.parse(project.features) : [];
-    const waNumber = "6282223445225";
+
+    // Parse images array
+    let projectImages: string[] = [];
+    if (project.images) {
+        try {
+            projectImages = JSON.parse(project.images);
+        } catch (e) {
+            if (project.imageUrl) projectImages = [project.imageUrl];
+        }
+    } else if (project.imageUrl) {
+        projectImages = [project.imageUrl];
+    }
+
+    const waNumber = settings.whatsapp_number || "6282223445225";
     const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
         `Halo ManesMata, saya tertarik dengan project ${project.title}. Bisa bantu jelaskan lebih lanjut?`
     )}`;
@@ -32,21 +48,16 @@ export default async function ProjectDetailPage({
                 </Link>
             </nav>
 
-            <div className="max-w-5xl mx-auto px-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                    {/* Left: Image / Visual */}
-                    <div className="w-full">
+            <div className="max-w-6xl mx-auto px-6">
+                <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    {/* Left: Image Slider */}
+                    <div className="w-full h-[450px] lg:h-full lg:absolute lg:left-0 lg:top-0 lg:w-[calc(50%-1.5rem)] flex flex-col">
                         <div
-                            className="neo-box aspect-video overflow-hidden bg-white relative flex items-center justify-center"
-                            style={{ backgroundColor: !project.imageUrl ? project.color : 'white' }}
+                            className="neo-box w-full flex-1 overflow-hidden bg-white relative flex items-center justify-center"
+                            style={{ backgroundColor: projectImages.length === 0 ? project.color : 'white' }}
                         >
-                            {project.imageUrl ? (
-                                /* eslint-disable-next-line @next/next/no-img-element */
-                                <img
-                                    src={project.imageUrl}
-                                    alt={project.title}
-                                    className="w-full h-full object-contain"
-                                />
+                            {projectImages.length > 0 ? (
+                                <ProjectImageSlider images={projectImages} title={project.title} />
                             ) : (
                                 <h1 className="text-6xl font-black uppercase text-center text-white p-4" style={{ textShadow: "4px 4px 0 #000" }}>
                                     {project.title}
@@ -55,14 +66,14 @@ export default async function ProjectDetailPage({
                         </div>
 
                         {/* Status Tags */}
-                        <div className="flex gap-3 mt-6">
+                        <div className="flex gap-3 mt-6 shrink-0">
                             <span className="neo-box bg-green-300 px-4 py-1 font-black uppercase text-xs">Aktif</span>
                             <span className="neo-box bg-purple-300 px-4 py-1 font-black uppercase text-xs">Terverifikasi</span>
                         </div>
                     </div>
 
                     {/* Right: Info */}
-                    <div className="flex flex-col gap-8">
+                    <div className="flex flex-col gap-8 lg:col-start-2">
                         <div>
                             <div className="inline-block neo-box px-3 py-1 bg-[var(--color-accent)] text-xs font-black uppercase mb-4 shadow-[2px_2px_0_#000]">
                                 Project Detail

@@ -1,10 +1,19 @@
 import Image from "next/image";
 
 import Link from "next/link";
-import { getProjects } from "./actions";
+import { getProjects, getSettings } from "./actions";
 
 export default async function Home() {
   const projects = await getProjects();
+  const settings = await getSettings();
+
+  // Konfigurasi default jika data belum ada di database
+  const whatsappNumber = settings.whatsapp_number || "6282223445225";
+  const whatsappMessage = encodeURIComponent(settings.whatsapp_message || "Halo ManesMata, saya ingin berdiskusi...");
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+  const aboutText = settings.about_text || "ManesMata hadir sebagai wadah inovasi digital yang mengedepankan solusi praktis dan efisien untuk berbagai lini bisnis. Kami berfokus pada pengembangan perangkat lunak yang tidak hanya fungsional, tetapi juga memberikan pengalaman pengguna yang intuitif.";
+  const contactEmail = settings.contact_email || "halo@manesmata.id";
+  const footerCopyright = settings.footer_copyright || "© 2026 ManesMata. Hak Cipta Dilindungi.";
 
   return (
     <main className="min-h-screen pb-20">
@@ -49,7 +58,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project: any) => (
               <Link
-                href={`/project/${project.id}`}
+                href={`/project/${project.slug || project.id}`}
                 key={project.id}
                 className="neo-box flex flex-col h-full overflow-hidden bg-white group hover:translate-x-2 hover:-translate-y-2 transition-transform duration-200"
               >
@@ -112,7 +121,7 @@ export default async function Home() {
             Mengenal Lebih Dekat
           </h2>
           <p className="text-xl font-medium leading-relaxed mb-6 bg-white p-6 neo-box shadow-[4px_4px_0px_#000]">
-            ManesMata hadir sebagai wadah inovasi digital yang mengedepankan solusi praktis dan efisien untuk berbagai lini bisnis. Kami berfokus pada pengembangan perangkat lunak yang tidak hanya fungsional, tetapi juga memberikan pengalaman pengguna yang intuitif.
+            {aboutText}
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
             <span className="neo-box px-4 py-2 bg-white font-bold text-sm rotate-1">Desain Neobrutalism</span>
@@ -134,10 +143,14 @@ export default async function Home() {
             <p className="text-xl font-medium mb-4">
               Punya pertanyaan, ide kolaborasi, atau butuh bantuan teknis? Jangan ragu untuk menghubungi kami kapan saja melalui platform berikut:
             </p>
-            <a href="https://wa.me/6282223445225?text=Halo%20ManesMata,%20saya%20ingin%20berdiskusi..." target="_blank" rel="noopener noreferrer" className="neo-box p-6 transition-colors flex flex-col items-start gap-2 block">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="neo-box p-6 transition-colors flex flex-col items-start gap-2 block">
               <span className="font-bold text-sm uppercase tracking-wider text-[var(--color-primary)]">WhatsApp</span>
-              <span className="text-2xl font-black">0822-2344-5225</span>
+              <span className="text-2xl font-black">{whatsappNumber.replace(/(\d{2})(\d{3})(\d{4})(\d{4})/, '$1 $2-$3-$4')}</span>
             </a>
+            <div className="neo-box p-6 bg-white flex flex-col items-start gap-2">
+              <span className="font-bold text-sm uppercase tracking-wider text-[var(--color-primary)]">Email</span>
+              <span className="text-2xl font-black">{contactEmail}</span>
+            </div>
           </div>
 
           {/* Action box */}
@@ -145,7 +158,7 @@ export default async function Home() {
             <div className="text-6xl mb-4">💬</div>
             <h3 className="text-3xl font-black uppercase mb-4">Mari Berdiskusi!</h3>
             <p className="font-medium text-lg mb-8">Kirimkan pesan Anda 24/7. Kami akan merespons secepat mungkin untuk solusi bisnis Anda.</p>
-            <a href="https://wa.me/6282223445225?text=Halo%20ManesMata,%20saya%20ingin%20berdiskusi..." target="_blank" rel="noopener noreferrer" className="neo-button text-lg w-full py-4 text-center">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="neo-button text-lg w-full py-4 text-center">
               Kirim Pesan Sekarang
             </a>
           </div>
@@ -156,7 +169,7 @@ export default async function Home() {
       <footer className="border-t-4 border-black bg-white p-6 mt-12">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="font-black text-xl uppercase tracking-tighter">ManesMata<span className="text-[var(--color-primary)]">.</span></div>
-          <p className="font-medium text-sm">© 2026 ManesMata. Hak Cipta Dilindungi.</p>
+          <p className="font-medium text-sm">{footerCopyright}</p>
         </div>
       </footer>
     </main>

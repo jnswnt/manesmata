@@ -16,7 +16,15 @@ model Project {
   features    String?  // JSON stringified array of features
   color       String   // hex color code
   imageUrl    String?
+  images      String?  // JSON stringified array of image URLs
   demoUrl     String?
+  slug        String?  @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+model Setting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
 }

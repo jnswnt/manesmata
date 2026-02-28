@@ -1,6 +1,15 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import {
+    Plus,
+    Trash2,
+    Save,
+    Image as ImageIcon,
+    Link as LinkIcon,
+    ExternalLink,
+    Info
+} from "lucide-react";
 import { createProject, updateProject } from "../actions";
 import { useRouter } from "next/navigation";
 
@@ -30,8 +39,8 @@ export default function ProjectForm({ project }: { project?: any }) {
                 formRef.current?.reset();
                 setPreview(null);
             } else {
-                // Jika edit selesai, bersihkan URL edit
-                router.push("/admin");
+                // Setelah selesai, arahkan kembali ke daftar proyek
+                router.push("/admin/projects");
             }
         }
     }
@@ -78,6 +87,47 @@ export default function ProjectForm({ project }: { project?: any }) {
                         placeholder="Aplikasi pencatatan cuci motor..."
                         required
                     />
+                </div>
+
+                {/* Multi Images */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-sm font-black uppercase flex items-center gap-2">
+                            <ImageIcon size={16} /> Upload Gambar (Bisa banyak)
+                        </label>
+                        <input
+                            name="imageFiles"
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            className="w-full neo-box p-3 bg-white font-bold text-sm file:mr-4 file:py-1 file:px-4 file:neo-button file:bg-white file:text-xs file:font-black"
+                        />
+                        <p className="text-[10px] text-gray-400 font-bold uppercase italic">* Pilih beberapa file untuk carousel</p>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-black uppercase flex items-center gap-2">
+                            <LinkIcon size={16} /> URL Gambar Tambahan
+                        </label>
+                        <textarea
+                            name="imagesUrl"
+                            defaultValue={
+                                project?.images
+                                    ? (() => {
+                                        try {
+                                            const parsed = JSON.parse(project.images);
+                                            return Array.isArray(parsed) ? parsed.join(",\n") : project.images;
+                                        } catch (e) {
+                                            return project.images;
+                                        }
+                                    })()
+                                    : project?.imageUrl || ""
+                            }
+                            placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+                            rows={3}
+                            className="w-full neo-box p-4 focus:bg-[var(--color-primary)] transition-colors font-bold outline-none text-sm"
+                        />
+                        <p className="text-[10px] text-gray-400 font-bold uppercase italic">* Pisahkan dengan koma atau baris baru</p>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -169,7 +219,7 @@ export default function ProjectForm({ project }: { project?: any }) {
                     {project && (
                         <button
                             type="button"
-                            onClick={() => router.push("/admin")}
+                            onClick={() => router.push("/admin/projects")}
                             className="neo-button bg-gray-200 text-black border-gray-400 font-bold"
                         >
                             Batal
