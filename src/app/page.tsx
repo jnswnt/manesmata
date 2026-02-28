@@ -48,47 +48,58 @@ export default async function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project: any) => (
-              <div key={project.id} className="neo-box flex flex-col h-full overflow-hidden bg-white">
-                {/* Visual Header */}
+              <Link
+                href={`/project/${project.id}`}
+                key={project.id}
+                className="neo-box flex flex-col h-full overflow-hidden bg-white group hover:translate-x-2 hover:-translate-y-2 transition-transform duration-200"
+              >
+                {/* Visual Header / Image */}
                 <div
-                  className="h-48 w-full border-b-[4px] border-black flex items-center justify-center relative p-6"
-                  style={{ backgroundColor: project.color || 'var(--color-secondary)' }}
+                  className="h-56 w-full border-b-[4px] border-black flex items-center justify-center relative bg-gray-100 overflow-hidden"
+                  style={{ backgroundColor: !project.imageUrl ? (project.color || 'var(--color-secondary)') : 'transparent' }}
                 >
-                  <h3 className="text-3xl font-black uppercase text-center text-white" style={{ textShadow: "3px 3px 0 #000" }}>
-                    {project.title}
-                  </h3>
+                  {project.imageUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={project.imageUrl}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <h3 className="text-4xl font-black uppercase text-center text-white px-4" style={{ textShadow: "3px 3px 0 #000" }}>
+                      {project.title}
+                    </h3>
+                  )}
+                  {/* Category Badge overlay */}
+                  <div className="absolute top-4 left-4 neo-box bg-white px-3 py-1 text-xs font-black uppercase shadow-[2px_2px_0_#000]">
+                    Project
+                  </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-6 flex flex-col flex-grow">
-                  <p className="font-medium text-lg mb-6 flex-grow">{project.description}</p>
+                  <h3 className="text-2xl font-black uppercase mb-2 group-hover:text-[var(--color-primary)] transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="font-medium text-base mb-6 flex-grow line-clamp-3 opacity-80">{project.description}</p>
 
                   {project.features && (
-                    <div className="mb-6 flex flex-wrap gap-2">
+                    <div className="mb-0 flex flex-wrap gap-2">
                       {JSON.parse(project.features).slice(0, 3).map((feature: string, i: number) => (
-                        <span key={i} className="text-xs font-bold border-2 border-black px-2 py-1 bg-gray-100 rounded-sm">
+                        <span key={i} className="text-[10px] font-bold border-2 border-black px-2 py-0.5 bg-yellow-100 uppercase">
                           {feature}
                         </span>
                       ))}
-                      {JSON.parse(project.features).length > 3 && (
-                        <span className="text-xs font-bold border-2 border-black px-2 py-1 bg-gray-100 rounded-sm">
-                          +{JSON.parse(project.features).length - 3} lagi
-                        </span>
-                      )}
                     </div>
                   )}
-
-                  {(project.demoUrl && project.demoUrl !== '#') ? (
-                    <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="neo-button w-full">
-                      Kunjungi Web
-                    </a>
-                  ) : (
-                    <button className="neo-button w-full opacity-50 cursor-not-allowed" disabled>
-                      Demo Tidak Tersedia
-                    </button>
-                  )}
                 </div>
-              </div>
+
+                {/* Footer Action Hint */}
+                <div className="px-6 py-4 bg-gray-50 border-t-2 border-black flex justify-between items-center group-hover:bg-[var(--color-accent)] transition-colors">
+                  <span className="font-bold text-xs uppercase">Lihat Detail</span>
+                  <span className="text-xl">➜</span>
+                </div>
+              </Link>
             ))}
           </div>
         )}
@@ -121,15 +132,11 @@ export default async function Home() {
           {/* Contact Info */}
           <div className="flex flex-col gap-6">
             <p className="text-xl font-medium mb-4">
-              Punya pertanyaan, ide kolaborasi, atau butuh bantuan teknis? Jangan ragu untuk menghubungi kami melalui platform berikut:
+              Punya pertanyaan, ide kolaborasi, atau butuh bantuan teknis? Jangan ragu untuk menghubungi kami kapan saja melalui platform berikut:
             </p>
-            <a href="mailto:hello@manesmata.web.id" className="neo-box p-6 bg-[var(--color-secondary)] hover:bg-[#FFC900] transition-colors flex flex-col items-start gap-2 block">
-              <span className="font-bold text-sm uppercase tracking-wider">Email</span>
-              <span className="text-2xl font-black break-all">hello@manesmata.web.id</span>
-            </a>
-            <a href="https://wa.me/message/" target="_blank" rel="noopener noreferrer" className="neo-box p-6 bg-[var(--color-primary)] hover:bg-[#00E5FF] transition-colors flex flex-col items-start gap-2 block text-white">
-              <span className="font-bold text-sm uppercase tracking-wider">WhatsApp</span>
-              <span className="text-2xl font-black">+62 Hubungi via WA</span>
+            <a href="https://wa.me/6282223445225?text=Halo%20ManesMata,%20saya%20ingin%20berdiskusi..." target="_blank" rel="noopener noreferrer" className="neo-box p-6 transition-colors flex flex-col items-start gap-2 block">
+              <span className="font-bold text-sm uppercase tracking-wider text-[var(--color-primary)]">WhatsApp</span>
+              <span className="text-2xl font-black">0822-2344-5225</span>
             </a>
           </div>
 
@@ -138,9 +145,9 @@ export default async function Home() {
             <div className="text-6xl mb-4">💬</div>
             <h3 className="text-3xl font-black uppercase mb-4">Mari Berdiskusi!</h3>
             <p className="font-medium text-lg mb-8">Kirimkan pesan Anda 24/7. Kami akan merespons secepat mungkin untuk solusi bisnis Anda.</p>
-            <Link href="mailto:hello@manesmata.web.id" className="neo-button text-lg w-full py-4">
+            <a href="https://wa.me/6282223445225?text=Halo%20ManesMata,%20saya%20ingin%20berdiskusi..." target="_blank" rel="noopener noreferrer" className="neo-button text-lg w-full py-4 text-center">
               Kirim Pesan Sekarang
-            </Link>
+            </a>
           </div>
         </div>
       </section>

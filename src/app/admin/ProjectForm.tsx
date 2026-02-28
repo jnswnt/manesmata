@@ -1,96 +1,182 @@
 "use client";
 
-import { useRef } from "react";
-import { createProject } from "../actions";
+import { useRef, useState, useEffect } from "react";
+import { createProject, updateProject } from "../actions";
+import { useRouter } from "next/navigation";
 
-export default function ProjectForm() {
+export default function ProjectForm({ project }: { project?: any }) {
     const formRef = useRef<HTMLFormElement>(null);
+    const router = useRouter();
+    const [preview, setPreview] = useState<string | null>(project?.imageUrl || null);
 
-    async function actionCreate(formData: FormData) {
-        const res = await createProject(formData);
+    // Reset preview jika project berubah (misal ganti dari edit ke tambah)
+    useEffect(() => {
+        setPreview(project?.imageUrl || null);
+        if (!project) formRef.current?.reset();
+    }, [project]);
+
+    async function handleSubmit(formData: FormData) {
+        let res;
+        if (project) {
+            res = await updateProject(project.id, formData);
+        } else {
+            res = await createProject(formData);
+        }
+
         if (res?.error) {
             alert(res.error);
         } else {
-            formRef.current?.reset();
+            if (!project) {
+                formRef.current?.reset();
+                setPreview(null);
+            } else {
+                // Jika edit selesai, bersihkan URL edit
+                router.push("/admin");
+            }
         }
     }
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setPreview(url);
+        }
+    };
+
     return (
-        <form ref={formRef} action={actionCreate} className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-                <label htmlFor="title" className="font-bold uppercase tracking-tight">
-                    Nama Aplikasi <span className="text-red-500">*</span>
-                </label>
-                <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    className="neo-input"
-                    placeholder="e.g WashOps"
-                    required
-                />
-            </div>
+        <div className="neo-box p-6 bg-white shadow-[4px_4px_0px_#1e1e1e]">
+            <h2 className="text-2xl font-black uppercase mb-6 border-b-2 border-black pb-2">
+                {project ? `⚡ Edit Project: ${project.title}` : "🚀 Tambah Project Baru"}
+            </h2>
 
-            <div className="flex flex-col gap-2">
-                <label htmlFor="description" className="font-bold uppercase tracking-tight">
-                    Deskripsi Singkat <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                    id="description"
-                    name="description"
-                    className="neo-input min-h-[100px]"
-                    placeholder="Aplikasi pencatatan cuci motor..."
-                    required
-                />
-            </div>
-
-            <div className="flex flex-col gap-2">
-                <label htmlFor="color" className="font-bold uppercase tracking-tight">
-                    Warna Utama (Hex) <span className="text-red-500">*</span>
-                </label>
-                <div className="flex gap-2 items-center">
+            <form ref={formRef} action={handleSubmit} className="flex flex-col gap-5">
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="title" className="font-bold uppercase tracking-tight">
+                        Nama Aplikasi <span className="text-red-500">*</span>
+                    </label>
                     <input
-                        type="color"
-                        id="color"
-                        name="color"
-                        defaultValue="#5CE1E6"
-                        className="w-12 h-12 p-1 bg-white border-2 border-black cursor-pointer shadow-[2px_2px_0px_#1e1e1e]"
+                        type="text"
+                        id="title"
+                        name="title"
+                        defaultValue={project?.title || ""}
+                        className="neo-input"
+                        placeholder="e.g WashOps"
                         required
                     />
-                    <span className="text-sm font-medium italic opacity-70">Pilih warna branding aplikasi</span>
                 </div>
-            </div>
 
-            <div className="flex flex-col gap-2">
-                <label htmlFor="features" className="font-bold uppercase tracking-tight">
-                    Fitur Utama (JSON Array Format)
-                </label>
-                <input
-                    type="text"
-                    id="features"
-                    name="features"
-                    className="neo-input"
-                    placeholder='["Kasir", "Notifikasi WA"]'
-                />
-                <span className="text-xs font-medium">Opsional. Pisahkan dengan format ["Hitung Gaji", "Absensi"]</span>
-            </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="description" className="font-bold uppercase tracking-tight">
+                        Deskripsi Singkat <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        defaultValue={project?.description || ""}
+                        className="neo-input min-h-[100px]"
+                        placeholder="Aplikasi pencatatan cuci motor..."
+                        required
+                    />
+                </div>
 
-            <div className="flex flex-col gap-2">
-                <label htmlFor="demoUrl" className="font-bold uppercase tracking-tight">
-                    Link Demo / Web
-                </label>
-                <input
-                    type="url"
-                    id="demoUrl"
-                    name="demoUrl"
-                    className="neo-input"
-                    placeholder="https://washops.com"
-                />
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="color" className="font-bold uppercase tracking-tight">
+                            Warna Tema (Hex) <span className="text-red-500">*</span>
+                        </label>
+                        <div className="flex gap-2 items-center">
+                            <input
+                                type="color"
+                                id="color"
+                                name="color"
+                                defaultValue={project?.color || "#5CE1E6"}
+                                className="w-12 h-12 p-1 bg-white border-2 border-black cursor-pointer shadow-[2px_2px_0px_#1e1e1e]"
+                                required
+                            />
+                            <span className="text-sm font-medium italic opacity-70">Warna branding</span>
+                        </div>
+                    </div>
 
-            <button type="submit" className="neo-button w-full mt-2 py-4 text-xl">
-                + Simpan Project
-            </button>
-        </form>
+                    <div className="flex flex-col gap-2">
+                        <label htmlFor="demoUrl" className="font-bold uppercase tracking-tight">
+                            Link Demo / Web
+                        </label>
+                        <input
+                            type="url"
+                            id="demoUrl"
+                            name="demoUrl"
+                            defaultValue={project?.demoUrl || ""}
+                            className="neo-input"
+                            placeholder="https://washops.com"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <label className="font-bold uppercase tracking-tight">
+                        Screenshot / Foto Project
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-2">
+                            <input
+                                type="file"
+                                name="imageFile"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="text-sm file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:text-sm file:font-bold file:bg-[var(--color-bg)] hover:file:bg-white cursor-pointer"
+                            />
+                            <span className="text-xs opacity-60">Upload file langsung (Max 5MB)</span>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <input
+                                type="text"
+                                name="imageUrl"
+                                defaultValue={project?.imageUrl || ""}
+                                className="neo-input text-sm"
+                                placeholder="Atau tempel URL gambar di sini..."
+                            />
+                        </div>
+                    </div>
+                    {preview && (
+                        <div className="mt-2 border-2 border-black p-2 inline-block bg-gray-50">
+                            <p className="text-xs font-bold uppercase mb-1">Preview:</p>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={preview} alt="Preview" className="max-h-[150px] object-contain" />
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="features" className="font-bold uppercase tracking-tight">
+                        Fitur Utama (JSON Format)
+                    </label>
+                    <input
+                        type="text"
+                        id="features"
+                        name="features"
+                        defaultValue={project?.features || ""}
+                        className="neo-input"
+                        placeholder='["Kasir", "Notifikasi WA"]'
+                    />
+                    <span className="text-xs font-medium">Contoh: ["Hitung Gaji", "Absensi"]</span>
+                </div>
+
+                <div className="flex gap-4 mt-2">
+                    <button type="submit" className="neo-button flex-grow py-4 text-xl">
+                        {project ? "⚡ Update Project" : "🚀 Simpan Project"}
+                    </button>
+                    {project && (
+                        <button
+                            type="button"
+                            onClick={() => router.push("/admin")}
+                            className="neo-button bg-gray-200 text-black border-gray-400 font-bold"
+                        >
+                            Batal
+                        </button>
+                    )}
+                </div>
+            </form>
+        </div>
     );
 }

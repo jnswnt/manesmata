@@ -1,10 +1,21 @@
-import { getProjects, deleteProject, logoutAdmin } from "../actions";
+import { getProjects, logoutAdmin, getProjectById } from "../actions";
 import Link from "next/link";
 import ProjectForm from "./ProjectForm";
+import DeleteProjectButton from "./DeleteProjectButton";
 import { redirect } from "next/navigation";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ editId?: string }>;
+}) {
+    const params = await searchParams;
     const projects = await getProjects();
+
+    let projectToEdit = null;
+    if (params.editId) {
+        projectToEdit = await getProjectById(parseInt(params.editId));
+    }
 
     return (
         <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-sans pb-20">
@@ -31,10 +42,7 @@ export default async function AdminPage() {
             <main className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-start">
                 {/* Sidebar / Form Area */}
                 <section className="lg:col-span-1 lg:sticky lg:top-8 neo-box p-6 bg-white">
-                    <h2 className="text-2xl font-black uppercase mb-6 border-b-4 border-black inline-block pb-2">
-                        Tambah Project
-                    </h2>
-                    <ProjectForm />
+                    <ProjectForm project={projectToEdit} />
                 </section>
 
                 {/* List Project Area */}
@@ -64,22 +72,21 @@ export default async function AdminPage() {
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-wrap gap-4 mt-4">
+                                        <div className="flex flex-col sm:flex-row flex-wrap gap-4 mt-4 w-full">
                                             {project.demoUrl && (
-                                                <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-bold border-2 border-black px-4 py-2 hover:bg-gray-100 transition-colors">
+                                                <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto text-center text-sm font-bold border-2 border-black px-4 py-2 hover:bg-gray-100 transition-colors">
                                                     Lihat Demo
                                                 </a>
                                             )}
 
-                                            <form action={async (formData: FormData) => {
-                                                "use server";
-                                                await deleteProject(Number(formData.get("id")));
-                                            }}>
-                                                <input type="hidden" name="id" value={project.id} />
-                                                <button type="submit" className="text-sm font-bold border-2 border-[var(--color-primary)] text-[var(--color-primary)] px-4 py-2 hover:bg-[var(--color-primary)] hover:text-white transition-colors">
-                                                    🗑️ Hapus
-                                                </button>
-                                            </form>
+                                            <Link
+                                                href={`/admin?editId=${project.id}`}
+                                                className="w-full sm:w-auto text-center text-sm font-bold border-2 border-black bg-yellow-400 px-6 py-2 hover:translate-x-1 hover:-translate-y-1 transition-transform"
+                                            >
+                                                Edit
+                                            </Link>
+
+                                            <DeleteProjectButton id={project.id} />
                                         </div>
                                     </div>
                                 </div>
