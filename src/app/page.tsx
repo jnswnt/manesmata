@@ -11,11 +11,8 @@ export default async function Home() {
       {/* Navbar Minimal */}
       <nav className="flex items-center justify-between p-6 md:px-12 neo-box border-t-0 border-l-0 border-r-0 rounded-none bg-white">
         <div className="text-2xl font-black tracking-tighter uppercase">
-          Portofolio<span className="text-[var(--color-primary)]">.</span>
+          ManesMata<span className="text-[var(--color-primary)]">.</span>
         </div>
-        <Link href="/admin" className="font-bold text-sm tracking-wide hover:underline decoration-2 underline-offset-4">
-          Admin Dashboard
-        </Link>
       </nav>
 
       {/* Hero Section */}
